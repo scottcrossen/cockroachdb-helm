@@ -18,9 +18,9 @@ metadata:
   {{- with .Values.labels }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  annotations:
-    helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-delete-policy: before-hook-creation
+  {{- with .Values.init.jobAnnotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   template:
     metadata:
@@ -46,7 +46,7 @@ spec:
       {{- end }}
     {{- end }}
     {{- if .Values.tls.enabled }}
-      serviceAccountName: {{ template "cockroachdb.tls.serviceAccount.name" . }}
+      serviceAccountName: {{ template "cockroachdb.statefulset.serviceAccount.name" . }}
       initContainers:
         - name: copy-certs
           image: "busybox"
